@@ -6,11 +6,32 @@ function CustomerPage() {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [feedback, setFeedback] = useState("");
+    const [message, setMessage] = useState("");
 
-    const handleFormSubmiting = e => {
+    let handleFormSubmiting = async (e) => {
         e.preventDefault();
-        console.log("customer details: " + name + "," + email + "," + feedback)
-    }
+        try {
+            let res = await fetch("http://localhost:8080/feedback/v1/customer/create", {
+                method: "POST",
+                body: JSON.stringify({
+                    name: name,
+                    email: email,
+                    feedback: feedback,
+                }),
+            });
+
+            if (res.status === 200) {
+                setName("");
+                setEmail("");
+                setFeedback("");
+                setMessage("User created successfully");
+            } else {
+                setMessage("Some error occured");
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    };
 
     return (
         <Form style={{ maxWidth: '400px', margin: '0 auto', transform: 'translate(-50%,-50%)', top: '50%', left: '50%', position: 'absolute' }} onSubmit={handleFormSubmiting}>
