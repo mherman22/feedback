@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Stack, Button, Form, TextArea, TextInput } from '@carbon/react';
+import { Stack, Button, Form, TextArea, TextInput, Modal } from '@carbon/react';
 import axios from 'axios';
 
 function CustomerPage() {
@@ -18,7 +18,11 @@ function CustomerPage() {
         }
 
         axios.post("http://localhost:8080/feedback/v1/customer/create", postData)
-            .then(res => console.log(res.data));
+            .then(res =>
+                // <Modal open passiveModal modalHeading="You have been successfully signed out"></Modal>
+                console.log(res.data)
+            );
+
 
         setName("");
         setEmail("");
