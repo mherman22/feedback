@@ -1,39 +1,8 @@
-// import React, { useEffect, useState } from 'react';
-// import { Loading } from '@carbon/react';
-
-// const LandingPage = () => {
-
-//     const [customers, setCustomer] = useState([]);
-//     const [loading, setLoading] = useState(false);
-
-//     useEffect(() => {
-//         setLoading(true);
-
-//         fetch('http://localhost:8080/feedback/v1/customer/get-all')
-//             .then(response => response.json())
-//             .then(data => {
-//                 setCustomer(data);
-//                 setLoading(false);
-//             })
-//     }, []);
-
-//     if (loading) {
-//         return <Loading />;
-//     }
-
-//     return (
-//         <div>
-//             <h1>Landing page</h1>
-//             <h2>Customer feedback details</h2>
-//         </div>
-//     );
-// };
-
-// export default LandingPage;
 import React, { useEffect, useMemo, useState } from 'react';
-import { DataTable } from '@carbon/react';
+import { DataTable, Loading, DataTableSkeleton } from '@carbon/react';
 import axios from 'axios';
 import headers from './headers';
+import styles from './_landing-page.scss';
 
 const {
     TableContainer,
@@ -45,13 +14,15 @@ const {
     TableCell
 } = DataTable;
 
-export default function ProjectDataTable() {
+export default function LandingPage() {
 
     const [customers, setCustomers] = useState([]);
+    const [isloading, setIsLoading] = useState(false);
 
     const tableRows = useMemo(() =>
         customers?.map((customer) => {
             return {
+                id: customer.id,
                 name: customer.name,
                 email: customer.emailAddress,
                 feedback: customer.customerFeedback
@@ -61,15 +32,21 @@ export default function ProjectDataTable() {
     );
 
     useEffect(() => {
+        setIsLoading(true);
         axios.get("http://localhost:8080/feedback/v1/customer/get-all")
             .then(response => {
-                console.log('Printing projects data', response.data);
+                console.log('Printing data', response.data);
                 setCustomers(response.data);
+                setIsLoading(false);
             })
             .catch(error => {
                 console.log('Something went wrong', error);
             })
     }, []);
+
+    if (isloading) {
+        return <DataTableSkeleton className={styles.dataTableSkeleton} role="progressbar" rowCount={3} columnCount={3} zebra />;
+    }
 
     return (
         <div>
@@ -77,7 +54,7 @@ export default function ProjectDataTable() {
                 title="Customer Feedback Details"
                 description="Showing customer feedback details"
             >
-                <DataTable rows={tableRows} headers={headers} isSortable={true} size="short">
+                <DataTable rows={tableRows} headers={headers} isSortable={true} size="sm">
                     {({ rows, headers, getHeaderProps, getTableProps, getRowProps }) => (
                         <Table {...getTableProps()}>
                             <TableHead>
